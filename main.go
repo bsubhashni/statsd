@@ -13,7 +13,8 @@ import (
 )
 
 type Config struct {
-	interval int64
+	nameSpace string
+	interval  int64
 }
 
 func getCPUSample() (idle, total uint64) {
@@ -73,7 +74,9 @@ func SendStats(namespace string, conn net.Conn) {
 func main() {
 	server := flag.String("server", "", "Graphite Server and carbon port to connect to")
 	namespace := flag.String("Namespace", "", "This is the graphite namespace")
+	interval := flag.Int("Interval", 5, "Sampling interval in seconds")
 
+	flag.Parse()
 	conn, err := net.Dial("tcp", *server)
 	if err != nil {
 		log.Fatalf("Cannot connect to the server %v", err)
@@ -81,6 +84,6 @@ func main() {
 	defer conn.Close()
 	for {
 		SendStats(*namespace, conn)
-		time.Sleep(1 * time.Second)
+		time.Sleep(time.Duration(*interval) * time.Second)
 	}
 }
