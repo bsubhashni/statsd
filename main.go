@@ -62,12 +62,15 @@ func SendStats(namespace string, conn net.Conn) {
 
 	memUsage := getMemoryUsage()
 
-	cpuinfo := cpuns + " " + fmt.Sprintf("%.6f %d", cpuUsage, time.Now().Unix())
+	cpuinfo := cpuns + " " + fmt.Sprintf("%.6f %d\n", cpuUsage, time.Now().Unix())
 	meminfo := memns + " " + fmt.Sprintf("%d %d\n", memUsage, time.Now().Unix())
 	fmt.Printf("%s \n", cpuinfo)
 	fmt.Printf("%s", meminfo)
 	if _, err := conn.Write([]byte(meminfo)); err != nil {
-		log.Fatalf("Error writing to server %v", err)
+		log.Fatalf("Error writing mem info to server %v", err)
+	}
+	if _, err := conn.Write([]byte(cpuinfo)); err != nil {
+		log.Fatalf("Error writing cpu info to server %v", err)
 	}
 }
 
